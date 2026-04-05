@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#07101E">
+  <meta name="description" content="Aplicație de pregătire pentru examenul de licență planor – Cunoașterea Generală a Aeronavei">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Planorism CGP">
+  <title>Planorism CGP</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+  <style>
+    :root {
+      --bg-deep:    #07101E;
+      --bg-card:    #0E1E30;
+      --bg-surface: #152134;
+      --accent:     #3B82F6;
+      --accent2:    #60A5FA;
+      --text:       #E2E8F0;
+      --text-muted: #94A3B8;
+      --border:     #1E3A5F;
+      --success:    #22C55E;
+      --warning:    #EAB308;
+      --danger:     #EF4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── SCREENS ─── */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+    .screen.active { display: block; }
+
+    /* ─── TOP BAR ─── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-deep);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+    }
+    .topbar .back-btn {
+      background: none;
+      border: none;
+      color: var(--accent2);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      line-height: 1;
+    }
+    .topbar .back-btn:active { background: var(--bg-surface); }
+    .topbar h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+    .topbar .cap-badge {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      padding: 3px 8px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    /* ─── HOME SCREEN ─── */
+    #screen-home {
+      padding: 0 0 80px;
+    }
+    .home-hero {
+      background: linear-gradient(160deg, #0E1E30 0%, #07101E 100%);
+      padding: 40px 20px 30px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .home-hero .app-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      margin: 0 auto 16px;
+      display: block;
+      border: 2px solid var(--border);
+    }
+    .home-hero h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .home-hero p {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 320px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+    .home-hero .tag {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--accent2);
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.3);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 20px 16px 8px;
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 12px;
+    }
+    .chapter-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: background 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .chapter-card:active {
+      background: var(--bg-surface);
+      border-color: var(--accent);
+    }
+    .chapter-card .num {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent2);
+      flex-shrink: 0;
+    }
+    .chapter-card .info { flex: 1; }
+    .chapter-card .info h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+    .chapter-card .info p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .chapter-card .arrow {
+      color: var(--text-muted);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* ─── INSTALL BANNER ─── */
+    #install-banner {
+      display: none;
+      margin: 12px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 12px;
+      padding: 14px;
+      align-items: center;
+      gap: 12px;
+    }
+    #install-banner.show { display: flex; }
+    #install-banner p {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    #install-banner button {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #install-banner .dismiss {
+      background: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      padding: 4px 8px;
+    }
+
+    /* ─── CHAPTER SCREEN ─── */
+    #screen-chapter {
+      padding-bottom: 80px;
+    }
+
+    .chapter-body {
+      padding: 16px;
+    }
+
+    /* Progress tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 12px 16px 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Tab panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Content styles */
+    .content-section {
+      margin-bottom: 20px;
+    }
+    .content-section h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .content-section p {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+    .content-section ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .content-section ul li {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+      padding-left: 16px;
+      position: relative;
+    }
+    .content-section ul li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .content-section ul li strong {
+      color: var(--accent2);
+    }
+
+    /* Highlight boxes */
+    .box {
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .box-info {
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.25);
+      color: var(--text);
+    }
+    .box-warning {
+      background: rgba(234,179,8,0.08);
+      border: 1px solid rgba(234,179,8,0.3);
+      color: #FDE68A;
+    }
+    .box-danger {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #FCA5A5;
+    }
+    .box-success {
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #86EFAC;
+    }
+    .box strong { font-weight: 700; }
+
+    /* Table */
+    .tbl-wrap {
+      overflow-x: auto;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      background: var(--bg-surface);
+      color: var(--accent2);
+      font-weight: 700;
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    tbody td {
+      padding: 9px 12px;
+      color: var(--text);
+      border-bottom: 1px solid rgba(30,58,95,0.4);
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* Image section */
+    .img-section {
+      margin-bottom: 16px;
+    }
+    .img-section h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .img-section img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: block;
+    }
+    .img-section img.error-img {
+      display: none;
+    }
+
+    /* Flashcards */
+    .flashcard-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .flashcard {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .flashcard .q {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 8px;
+    }
+    .flashcard .a {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ─── BOTTOM NAV ─── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: var(--bg-deep);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding: 6px 0 env(safe-area-inset-bottom, 6px);
+    }
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 4px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: color 0.15s;
+    }
+    .nav-btn.active { color: var(--accent2); }
+    .nav-btn .icon { font-size: 20px; }
+
+    /* ─── OFFLINE TOAST ─── */
+    #offline-toast {
+      display: none;
+      position: fixed;
+      bottom: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+      padding: 10px 18px;
+      border-radius: 30px;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    #offline-toast.show { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN: HOME                              -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+
+  <div class="home-hero">
+    <img src="icon-192.png" alt="Planorism" class="app-icon">
+    <h1>Planorism CGP</h1>
+    <p>Cunoașterea Generală a Aeronavei Planor<br>Pregătire Examen Licență – Aeroclubul României</p>
+    <span class="tag">✈ 5 Capitole · Offline Ready</span>
+  </div>
+
+  <!-- Install Banner -->
+  <div id="install-banner">
+    <p>Instalează aplicația pe ecranul principal pentru acces rapid offline.</p>
+    <button id="install-btn">Instalează</button>
+    <button class="dismiss" id="dismiss-install" title="Închide">✕</button>
+  </div>
+
+  <div class="section-label">Module de Studiu</div>
+
+  <div class="chapter-list">
+    <div class="chapter-card" onclick="openChapter(1)">
+      <div class="num">1</div>
+      <div class="info">
+        <h3>Structura și Construcția Planorului</h3>
+        <p>Materiale, finețe, geometrie, solicitări mecanice</p>
+      </div>
+      <span class="arrow">›</span>
+    </div>
+    <div class="chapter-card" onclick="openChapter(2)">
+      <div class="num">2</div>
+      <div class="info">
+        <h3>Tipuri de Planoare și Planoare Motorizate</h3>
+        <p>Clasificare FAI, sustainer, TMG, performanță</p>
+      </div>
+      <span class="arrow">›</span>
+    </div>
+    <div class="chapter-card" onclick="openChapter(3)">
+      <div class="num">3</div>
+      <div class="info">
+        <h3>Aparate de Bord</h3>
+        <p>Pitot-static, altimetrie, vitezometru, variometru</p>
+      </div>
+      <span class="arrow">›</span>
+    </div>
+    <div class="chapter-card" onclick="openChapter(4)">
+      <div class="num">4</div>
+      <div class="info">
+        <h3>Manuale și Documente</h3>
+        <p>AFM, checklist, navigabilitate, limitări</p>
+      </div>
+      <span class="arrow">›</span>
+    </div>
+    <div class="chapter-card" onclick="openChapter(5)">
+      <div class="num">5</div>
+      <div class="info">
+        <h3>Mentenanța Planorului</h3>
+        <p>Montare, curățare, manevrare, acumulator</p>
+      </div>
+      <span class="arrow">›</span>
+    </div>
+  </div>
+
+</div><!-- /screen-home -->
+
+
+<!-- ══════════════════════════════════════════ -->
+<!--  SCREEN: CHAPTER                           -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-chapter" class="screen">
+
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">‹</button>
+    <h2 id="chapter-title">Capitol</h2>
+    <span class="cap-badge" id="chapter-badge">CAP 1</span>
+  </div>
+
+  <!-- Navigation tabs -->
+  <div class="tabs" id="chapter-tabs">
+    <button class="tab-btn active" onclick="switchTab(this,'tab-content')">📖 Conținut</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-images')">🖼 Imagini</button>
+    <button class="tab-btn" onclick="switchTab(this,'tab-flash')">⚡ Flashcards</button>
+  </div>
+
+  <!-- TAB: CONTENT -->
+  <div id="tab-content" class="tab-panel active chapter-body">
+    <div id="chapter-content-inner"></div>
+  </div>
+
+  <!-- TAB: IMAGES -->
+  <div id="tab-images" class="tab-panel chapter-body">
+    <div class="img-section">
+      <h4>🗺 Hartă Mintală</h4>
+      <img id="img-harta" src="" alt="Hartă mintală" onerror="this.classList.add('error-img')">
+    </div>
+    <div class="img-section">
+      <h4>📊 Infografic</h4>
+      <img id="img-infografic1" src="" alt="Infografic" onerror="this.classList.add('error-img')">
+    </div>
+    <div class="img-section" id="img-section-2" style="display:none">
+      <h4>📊 Infografic 2</h4>
+      <img id="img-infografic2" src="" alt="Infografic 2" onerror="this.classList.add('error-img')">
+    </div>
+  </div>
+
+  <!-- TAB: FLASHCARDS -->
+  <div id="tab-flash" class="tab-panel chapter-body">
+    <div id="flashcard-inner" class="flashcard-grid"></div>
+  </div>
+
+</div><!-- /screen-chapter -->
+
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="goHome()">
+    <span class="icon">🏠</span>Acasă
+  </button>
+  <button class="nav-btn" id="nav-cap" onclick="/* stays on current chapter */" style="display:none">
+    <span class="icon">📖</span>Capitol
+  </button>
+</nav>
+
+<div id="offline-toast">⚡ Mod offline – Conținut disponibil din cache</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--  DATA – Conținut capitole                             -->
+<!-- ══════════════════════════════════════════════════════ -->
+<script>
+const CHAPTERS = {
+
+  1: {
+    title: "Structura și Construcția Planorului",
+    content: `
+      <div class="content-section">
+        <h3>1. Introducere și Configurația Standard</h3>
+        <p>Zborul planorului se fundamentează pe principii aerodinamice riguroase. Fluxul de aer traversând profilul aripilor generează <strong>forța portantă</strong> – fenomenul fizic care permite menținerea în zbor.</p>
+        <div class="box box-info"><strong>Principalele componente ale planorului:</strong></div>
+        <ul>
+          <li><strong>Aripă</strong> – formă alungită, rol principal în producerea sustentației</li>
+          <li><strong>Fuselaj</strong> – corpul central cu carlinga (posturile de pilotaj) în fața aripilor</li>
+          <li><strong>Ampenaj orizontal</strong> – stabilizator + profundor (la coada aeronavei)</li>
+          <li><strong>Ampenaj vertical</strong> – derivă + direcție</li>
+          <li><strong>Tren de aterizare</strong> – roată principală lângă centrul de greutate + bechie posterioară</li>
+          <li><strong>Declanșator</strong> – mecanism remorcare, între botul planorului și trenul principal</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h3>2. Evoluția Materialelor</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Perioadă</th><th>Material</th><th>Caracteristici</th></tr></thead>
+            <tbody>
+              <tr><td>Pionieri</td><td>Lemn + pânză</td><td>Structură rudimentară, greutate mare</td></tr>
+              <tr><td>Mid-sec. XX</td><td>Metal</td><td>Rezistență crescută, finisaj mai bun</td></tr>
+              <tr><td>Actual</td><td>Fibră de sticlă / Carbon / Kevlar</td><td>Raport greutate-rezistență optim, finisaj neted</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box-info"><strong>Fibra de sticlă</strong> este predominantă datorită rezistenței ridicate și capacității de a permite un <strong>finisaj exterior neted</strong> – vital pentru reducerea rezistenței aerodinamice.</div>
+      </div>
+
+      <div class="content-section">
+        <h3>3. Finețea Planorului</h3>
+        <p><strong>Finețea</strong> este indicatorul principal al eficienței aerodinamice: raportul dintre distanța parcursă la planare și înălțimea pierdută în aer calm.</p>
+        <div class="box box-success">
+          <strong>Exemplu numeric:</strong> Finețe de <strong>40:1</strong> = planorul parcurge 40 m pe orizontală pierzând doar 1 m altitudine.
+        </div>
+        <div class="box box-warning">
+          <strong>ATENȚIE:</strong> Extinderea frânelor aerodinamice reduce drastic finețea (ex: de la 34:1 la 7:1). Garniturile de etanșare deteriorate cresc turbulențele și scad finețea.
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>4. Elemente Geometrice și Dimensionale</h3>
+        <ul>
+          <li><strong>Anvergura</strong> – lungimea aripii de la o extremitate la alta</li>
+          <li><strong>Suprafața portantă</strong> – proiecția plană, orizontală a aripii</li>
+          <li><strong>Înălțimea planorului</strong> – distanța verticală de la sol la cel mai înalt punct (măsurată pe sol)</li>
+          <li><strong>Alungirea aripii (Aspect Ratio)</strong> – raportul anvergură / Coarda Medie Aerodinamică (CMA)</li>
+          <li><strong>Greutatea totală</strong> – structură + pilot + parașută + bagaje</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h3>5. Solicitări Mecanice – Structura Internă</h3>
+        <p>Din perspectiva ingineriei structurale, piesele se clasifică în:</p>
+        <ul>
+          <li><strong>Bare</strong> – o dimensiune predominantă (ex: lonjeroane)</li>
+          <li><strong>Plăci</strong> – două dimensiuni predominante (ex: panourile învelișului)</li>
+          <li><strong>Piese masive</strong> – trei dimensiuni comparabile (ex: noduri de îmbinare)</li>
+        </ul>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Tip solicitare</th><th>Definiție</th><th>Unde apare</th></tr></thead>
+            <tbody>
+              <tr><td>Tracțiune</td><td>Forță de întindere axială</td><td>Lonjeronul inferior în zbor</td></tr>
+              <tr><td>Compresiune</td><td>Forță de comprimare axială</td><td>Lonjeronul superior în zbor</td></tr>
+              <tr><td>Încovoiere</td><td>Solicitare combinată tracțiune + compresiune</td><td>Aripa sub sarcina portantă</td></tr>
+              <tr><td>Torsiune</td><td>Rotire axială</td><td>Aripa în viraje / rafale</td></tr>
+              <tr><td>Forfecare</td><td>Alunecare relativă a planelor</td><td>Îmbinări, bolțuri</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box-info">
+          <strong>Fibra de carbon</strong> preia excelent <strong>încovoierea</strong> (lonjeroane), <strong>fibra de sticlă</strong> preia <strong>torsiunea</strong> (învelișul).
+        </div>
+      </div>
+    `,
+    flashcards: [
+      { q: "Ce este finețea planorului?", a: "Raportul dintre distanța parcursă la planare și înălțimea pierdută în aer calm. Ex: 40:1 = 40 m orizontal per 1 m altitudine pierdut." },
+      { q: "Care sunt cele 3 tipuri de piese din clasificarea mecanică?", a: "Bare (1 dim. predominantă), Plăci (2 dim. predominante), Piese masive (3 dim. comparabile)." },
+      { q: "Ce material este predominant în planoarele moderne și de ce?", a: "Fibra de sticlă – rezistență ridicată raportat la greutate + permite finisaj neted esențial pentru eficiență aerodinamică." },
+      { q: "Ce este Alungirea aripii (Aspect Ratio)?", a: "Raportul dintre anvergura aripii și Coarda Medie Aerodinamică (CMA). O alungire mare = eficiență aerodinamică superioară." },
+      { q: "Unde este amplasat declanșatorul de remorcare?", a: "Între botul planorului și trenul de aterizare principal." },
+      { q: "Ce rol au garniturile de etanșare?", a: "Etanșează suprafețele de comandă pentru a preveni scurgerea aerului de la intrados la extrados, reducând turbulențele și păstrând finețea." },
+      { q: "Ce tip de solicitare apare în lonjeronul superior al aripii în zbor normal?", a: "Compresiune (lonjeronul superior), Tracțiune (lonjeronul inferior). Combinat = Încovoiere." }
+    ]
+  },
+
+  2: {
+    title: "Tipuri de Planoare și Planoare Motorizate",
+    content: `
+      <div class="content-section">
+        <h3>1. Principii de Bază</h3>
+        <p>Planoarele sunt aeronave mai grele decât aerul, al căror zbor este menținut prin <strong>forța portantă</strong> generată de curgerea aerului peste suprafețele portante.</p>
+        <ul>
+          <li><strong>Aripă alungită</strong> – eficiență aerodinamică maximă</li>
+          <li><strong>Fuselaj cu carlingă</strong> – în fața aripilor, vizibilitate optimă</li>
+          <li><strong>Ampenaje</strong> – suprafețe de comandă și stabilizare la coada fuselajului</li>
+          <li><strong>Tren de aterizare</strong> – roată principală centrată în zona centrului de greutate</li>
+          <li><strong>Declanșator</strong> – mecanism remorcaj (avion sau automosor)</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h3>2. Clasificare după Destinație</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Tip</th><th>Caracteristici</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Planoare de Școală</strong></td><td>Instruire primară, robuste, dublă comandă (tandem sau cot-a-cot)</td></tr>
+              <tr><td><strong>Planoare de Performanță</strong></td><td>Distanțe mari, viteze ridicate, finețe maximă</td></tr>
+              <tr><td><strong>Planoare de Acrobație</strong></td><td>Rezistă solicitări mecanice extreme, factori de sarcină ridicați</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>3. Clasele de Competiție FAI</h3>
+        <p>Federația Aeronautică Internațională (FAI) grupează planoarele în clase pentru standardizarea performanțelor în competiții. Clasificarea asigură competiție echitabilă între aeronave cu caracteristici similare.</p>
+        <div class="box box-info">Cunoașterea claselor FAI este esențială pentru examen. Ele definesc limitele de anvergură, greutate și tip de planor admis.</div>
+      </div>
+
+      <div class="content-section">
+        <h3>4. Sisteme de Propulsie – Tipuri</h3>
+        <p><strong>A. Sustainer (Motor de menținere)</strong></p>
+        <div class="box box-warning">Motoare de putere REDUSĂ – folosite exclusiv pentru a evita aterizarea forțată. <strong>NU permit decolarea autonomă!</strong></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Tip Sustainer</th><th>Descriere</th></tr></thead>
+            <tbody>
+              <tr><td>Termic</td><td>Motor cu ardere internă, combustibil convențional</td></tr>
+              <tr><td>Electric</td><td>Motor electric, acumulator la bord</td></tr>
+              <tr><td>Turboreactor mic</td><td>Motor jet miniaturizat, putere mai mare</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>B. Planoare cu Autolansare</strong></p>
+        <p>Motoare suficient de puternice pentru <strong>decolarea fără asistență externă</strong> (fără avion remorcher sau automosor).</p>
+        <p><strong>C. Motoplanoare (TMG – Touring Motor Glider)</strong></p>
+        <p>Categorie hibridă: structura planorului (anvergură mare, finețe) + caracteristici avion (motor fix, decolare autonomă, cabină cot-a-cot).</p>
+      </div>
+
+      <div class="content-section">
+        <h3>5. Analiză Comparativă</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Caracteristică</th><th>Planoare Pure</th><th>Motorizate / TMG</th></tr></thead>
+            <tbody>
+              <tr><td>Construcție</td><td>Lemn/pânză sau compozite</td><td>Predominant Carbon/Kevlar</td></tr>
+              <tr><td>Tren aterizare</td><td>Fix sau escamotabil</td><td>Include adesea fuzee (roți pe aripi)</td></tr>
+              <tr><td>Finețe</td><td>Maximă (profil pur)</td><td>Ușor redusă de locașul motorului</td></tr>
+              <tr><td>Decolare</td><td>Remorcat / automosor</td><td>Autonomă (autolansare / TMG)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box-danger">
+          <strong>Punct critic examen:</strong> Extinderea frânelor aerodinamice reduce finețea de la ~34:1 la ~7:1. Fuzeele (roți pe aripi) oferă stabilitate la autolansare.
+        </div>
+        <div class="box box-info">
+          <strong>Garnituri de etanșare:</strong> Etanșează suprafețele de comandă → previn scurgerea aerului de la intrados la extrados → reduc turbulențele → păstrează finețea maximă.
+        </div>
+      </div>
+    `,
+    flashcards: [
+      { q: "Ce tip de planor este destinat instruirii primare?", a: "Planoarele de Școală – robuste, cu dublă comandă (tandem sau cot-a-cot)." },
+      { q: "Ce este un Sustainer și ce NU poate face?", a: "Motor de menținere de putere redusă, folosit pentru a evita aterizarea forțată. NU permite decolarea autonomă!" },
+      { q: "Ce este un TMG (Touring Motor Glider)?", a: "Categorie hibridă: structura planorului (anvergură mare) + motor fix + decolare autonomă + cabină cot-a-cot." },
+      { q: "Ce sunt fuzeele și care este rolul lor?", a: "Roți amplasate pe aripi ale planoarelor motorizate/TMG. Oferă stabilitate la autolansare fără ajutor la aripi." },
+      { q: "Cum afectează frânele aerodinamice finețea?", a: "Drastic – de la ~34:1 (zbor normal) la ~7:1 (frâne extinse). Esențial de știut pentru calculul distanței de aterizare." },
+      { q: "Ce organizație clasifică planoarele în clase de competiție?", a: "FAI – Federația Aeronautică Internațională." },
+      { q: "Planoarele cu Autolansare se deosebesc de Sustainer prin ce?", a: "Motoarele de autolansare sunt suficient de puternice pentru decolarea autonomă; Sustainerul NU poate decola independent." }
+    ]
+  },
+
+  3: {
+    title: "Aparate de Bord",
+    content: `
+      <div class="content-section">
+        <h3>1. Sistemul Pitot-Static</h3>
+        <p>Funcționarea corectă a instrumentelor depinde de captarea precisă a presiunilor atmosferice. Orice obstrucție este critică pentru siguranța zborului.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Tip Presiune</th><th>Sursă</th><th>Definiție</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Totală (Pitot)</strong></td><td>Tub Pitot (bot planor / derivă)</td><td>Presiune statică + presiune dinamică (din mișcare)</td></tr>
+              <tr><td><strong>Statică</strong></td><td>Prize statice pe fuselaj</td><td>Presiunea aerului înconjurător în repaus la altitudinea curentă</td></tr>
+              <tr><td><strong>Depresiune</strong><br>(vacuum)</td><td>Priză specială</td><td>Sursă pentru unele tipuri de variometre</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box-danger">
+          <strong>Erori critice dacă prizele statice sunt BLOCATE:</strong><br>
+          • Altimetrul și variometrul rămân <strong>"înghețate"</strong> (nu indică)<br>
+          • Vitezometrul indică eronat (funcționează ca un altimetru inversat)
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Instrument</th><th>Conectat la</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Vitezometrul</strong></td><td>Presiune Totală (Pitot) + Presiune Statică</td></tr>
+              <tr><td><strong>Altimetrul</strong></td><td>Exclusiv Presiunea Statică</td></tr>
+              <tr><td><strong>Variometrul</strong></td><td>Exclusiv Presiunea Statică</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>2. Altimetria și Calajele Q</h3>
+        <p>Altimetrul este un <strong>barometru aneroid</strong> – capsulă sensibilă care convertește variațiile de presiune statică în unități de lungime.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Calaj</th><th>Referință</th><th>Afișaj altimetru</th><th>Utilizare</th></tr></thead>
+            <tbody>
+              <tr><td><strong>QFE</strong></td><td>Presiunea la aerodrom</td><td>0 la sol pe pista de referință</td><td>Local, la aerodrom</td></tr>
+              <tr><td><strong>QNH</strong></td><td>Presiunea la nivelul mării</td><td>Altitudinea față de nivelul mării</td><td>Navigație, IFR</td></tr>
+              <tr><td><strong>QNE</strong></td><td>1013.25 hPa (ISA)</td><td>Nivel de zbor (FL)</td><td>Spații aeriene superioare</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>3. Vitezometrul: IAS vs TAS și Marcaje</h3>
+        <div class="box box-info">
+          <strong>IAS (Viteza Indicată)</strong> – valoarea afișată pe instrument; pilotul o folosește pentru limite structurale.<br>
+          <strong>TAS (Viteza Adevărată)</strong> – viteza reală față de masă de aer; crește față de IAS odată cu altitudinea.
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Marcaj</th><th>Culoare</th><th>Semnificație</th></tr></thead>
+            <tbody>
+              <tr><td>Arc Alb</td><td>⬜</td><td>Operare cu flaps scos (Vso → Vfe)</td></tr>
+              <tr><td>Arc Verde</td><td>🟩</td><td>Interval normal de operare</td></tr>
+              <tr><td>Arc Galben</td><td>🟨</td><td>Precauție – doar aer calm, fără manevre bruște</td></tr>
+              <tr><td>Linie Roșie (Vne)</td><td>🟥</td><td>Viteza maximă admisă – <strong>NICIODATĂ depășită!</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>4. Variometrul și VET</h3>
+        <p>Variometrul măsoară rata de variație a presiunii statice → indica viteza verticală (m/s). Tipuri: cu capsulă, cu paletă, electric.</p>
+        <div class="box box-success">
+          <strong>VET (Variometru de Energie Totală)</strong> – esențial în planorismul de performanță.<br>
+          Elimină "termicele de manșă" (indicații false cauzate de schimbul cinetică-potențială).<br>
+          <strong>Tub Braunschweig</strong> – priză specială de presiune folosită de sistemul VET.
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>5. Alte Instrumente</h3>
+        <ul>
+          <li><strong>IVG (Indicator Viraj și Glisadă)</strong> – acul = rata de viraj; bila = echilibru lateral. <em>Zbor corect: bila la centru.</em></li>
+          <li><strong>Compas Magnetic</strong> – detectează Nordul magnetic; instrument de bază pentru orientare</li>
+          <li><strong>Accelerometru (G-metru)</strong> – măsoară factorul de sarcină (unități "g") în manevre sau turbulențe</li>
+          <li><strong>FLARM</strong> – sistem de prevenire a coliziunilor; necesită alimentare electrică</li>
+        </ul>
+      </div>
+    `,
+    flashcards: [
+      { q: "Ce se întâmplă dacă prizele statice sunt blocate?", a: "Altimetrul și variometrul rămân 'înghețate'. Vitezometrul indică eronat (funcționează ca altimetru inversat)." },
+      { q: "La ce presiuni este conectat vitezometrul?", a: "La AMBELE: Presiunea Totală (Pitot) + Presiunea Statică. Diferența lor = presiunea dinamică = viteza." },
+      { q: "Ce indică linia roșie (Vne) pe vitezometru?", a: "Viteza maximă admisă – Never Exceed. Depășirea ei este strict interzisă, risc structural." },
+      { q: "Care este diferența dintre IAS și TAS?", a: "IAS = viteza indicată pe instrument (folosită pt. limite structurale). TAS = viteza reală față de masă de aer (crește cu altitudinea)." },
+      { q: "Ce calaj altimetric afișează 0 la sol pe pistă?", a: "QFE – presiunea la aerodrom." },
+      { q: "Ce calaj se folosește în spațiile aeriene superioare (FL)?", a: "QNE – presiunea standard ISA: 1013.25 hPa." },
+      { q: "Ce este VET și ce problemă rezolvă?", a: "Variometrul de Energie Totală. Elimină 'termicele de manșă' – indicații false cauzate de schimbul de energie cinetică-potențială la mișcări ale manșei." },
+      { q: "Ce este Tubul Braunschweig?", a: "Priză specială de presiune folosită de sistemul VET, instalată pe fuzelaj sau derivă." },
+      { q: "Ce indică bila de pe IVG?", a: "Echilibrul lateral al zborului. Zbor corect = bila la centru." }
+    ]
+  },
+
+  4: {
+    title: "Manuale și Documente",
+    content: `
+      <div class="content-section">
+        <h3>1. Importanța Documentației în Aviație</h3>
+        <p>Documentația de bord nu este un simplu set de formalități – constituie <strong>baza legală a navigabilității și a operării în siguranță</strong>.</p>
+        <div class="box box-danger">
+          <strong>Principiu fundamental:</strong> Documentele nu sunt opționale. Absența lor = zbor ilegal și nesigur.
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>2. Checklist-ul (Lista de Verificare)</h3>
+        <p>Document oficial structurat care cuprinde totalitatea acțiunilor și verificărilor obligatorii ce trebuie rulate <strong>secvențial</strong> pentru garantarea siguranței zborului.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fază zbor</th><th>Rol Checklist</th></tr></thead>
+            <tbody>
+              <tr><td>Pregătire (pre-zbor)</td><td>Verificarea planorului: comenzi, connections, structură</td></tr>
+              <tr><td>Decolare / Lansare</td><td>Configurare corectă aparate, sistem remorcare</td></tr>
+              <tr><td>Urgențe</td><td>Proceduri standardizate – reduce eroarea umană sub stres</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box-danger">
+          <strong>Factorul uman:</strong> Omiterea checklist-ului din distragere (ex: montare) sau stres este cauza primară a incidentelor grave. Memoria umană este considerată NESIGURĂ în medii complexe.
+        </div>
+        <div class="box box-warning">
+          <strong>Checklist-ul este OBLIGATORIU</strong> chiar și pentru piloții experimentați!
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>3. Manualul de Zbor (AFM – Aircraft Flight Manual)</h3>
+        <p>Documentul de <strong>autoritate supremă</strong> emis de producător. Stabilește procedurile de operare și limitele fizice ale aeronavei.</p>
+        <div class="box box-danger">
+          <strong>Prezența AFM la bord este OBLIGATORIE!</strong> Este singura sursă legală care definește limitările.
+        </div>
+        <ul>
+          <li>Definește limitările: viteze (Vne, Va, etc.), greutăți (MTOW), factori de sarcină maximi</li>
+          <li>Clarifică utilizarea declanșatoarelor pentru proceduri specifice</li>
+          <li>Stabilește configurația legală a aeronavei pentru fiecare manopere</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h3>4. Navigabilitatea</h3>
+        <p><strong>Definiție:</strong> Starea tehnică a aeronavei care confirmă conformitatea cu specificațiile de proiectare și capacitatea de a executa zborul în condiții de siguranță deplină.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Concept</th><th>Detaliu</th></tr></thead>
+            <tbody>
+              <tr><td>Certificat de Navigabilitate</td><td>Document oficial care atestă că planorul îndeplinește cerințele tehnice obligatorii</td></tr>
+              <tr><td>Responsabilitate mentenanță</td><td>Proprietarul/operatorul efectuează mentenanța</td></tr>
+              <tr><td>Responsabilitate finală</td><td><strong>Comandantul de bord (pilotul)</strong> verifică valabilitatea documentelor înainte de zbor</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>5. Sinteza pentru Examen</h3>
+        <ul>
+          <li><strong>Marcaje vitezometru</strong> – derivate DIRECT din capitolul "Limitări" al AFM, nu sunt orientative!</li>
+          <li><strong>Calculul greutății (MTOW)</strong> – include: masa planorului + pilot + <em>parașuta de salvare</em> + bagaje și echipamente</li>
+          <li><strong>Checklist</strong> – obligatoriu inclusiv pentru piloți experimentați</li>
+          <li><strong>AFM</strong> – unica sursă pentru limitele operaționale și procedurile de urgență</li>
+        </ul>
+        <div class="box box-danger">
+          <strong>MTOW include OBLIGATORIU parașuta de salvare!</strong> Este o capcană frecventă la examen.
+        </div>
+      </div>
+    `,
+    flashcards: [
+      { q: "Ce este AFM (Aircraft Flight Manual)?", a: "Manualul de Zbor – documentul de autoritate supremă emis de producător. Prezența la bord este strict obligatorie. Definește limitele operaționale și procedurile de urgență." },
+      { q: "Cine are responsabilitatea finală a verificării navigabilității?", a: "Comandantul de bord (Pilotul-comandant) verifică valabilitatea documentelor înainte de zbor, chiar dacă mentenanța o face proprietarul." },
+      { q: "Ce include calculul greutății maxime (MTOW)?", a: "Masa planorului + masa pilotului + PARAȘUTA DE SALVARE + bagaje și echipamente. Parașuta este o capcană frecventă de examen!" },
+      { q: "De ce este checklist-ul obligatoriu și pentru piloții experimentați?", a: "Memoria umană este considerată nesigură în medii de operare complexe. Checklist-ul elimină eroarea umană sub stres sau distragere." },
+      { q: "Ce este navigabilitatea?", a: "Starea tehnică a aeronavei care confirmă conformitatea cu specificațiile de proiectare și capacitatea de zbor în siguranță deplină." },
+      { q: "Marcajele de pe vitezometru sunt orientative sau obligatorii?", a: "OBLIGATORII. Sunt derivate direct din capitolul 'Limitări' al AFM. Nu sunt indicative – sunt limite legale structurale." },
+      { q: "Ce se verifică în faza de Urgențe cu checklist-ul?", a: "Proceduri standardizate pentru reducerea erorilor umane în situații de stres. Checklist-ul specific urgențelor urmează o secvență fixă." }
+    ]
+  },
+
+  5: {
+    title: "Mentenanța Planorului",
+    content: `
+      <div class="content-section">
+        <h3>1. Procedura de Montare și Verificarea Siguranței</h3>
+        <p>Montarea este etapa critică în care configurația trece de la transport la zbor. Documentația tehnică este imperativă.</p>
+        <div class="box box-danger">
+          <strong>AVERTISMENT:</strong> Respectarea documentației tehnice la montare nu este opțională. O eroare de montare poate fi fatală.
+        </div>
+        <ul>
+          <li><strong>Identificarea tipului de structură</strong> – semimonococă (învelișul + structura internă preiau eforturile) vs. monococă (învelișul preia singur eforturile)</li>
+          <li><strong>Asamblarea structurală</strong> – îmbinarea segmentelor aripii cu fuselajul, atenție la lonjeroane (structura de rezistență principală)</li>
+          <li><strong>Verificarea îmbinărilor și comenzilor</strong> – integritatea bolțurilor, axelor; cuplarea corectă a eleroanelor, flapsului, frânelor aerodinamice</li>
+        </ul>
+        <div class="box box-warning">
+          <strong>Regula de aur:</strong> Verificarea finală a asamblării se face conform instrucțiunilor de navigabilitate. Toate conexiunile TREBUIE verificate înainte de zbor.
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>2. Curățarea Aeronavei: Interdicții și Bune Practici</h3>
+        <p>Menținerea calității suprafețelor este esențială pentru <strong>păstrarea finețe</strong> și protejarea materialelor compozite.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Componentă</th><th>Permis</th><th>Interzis</th></tr></thead>
+            <tbody>
+              <tr><td>Suprafețe compozite</td><td>Apă + detergent blând, ceară auto</td><td>Solvenți, abrazivi, jet de apă fierbinte</td></tr>
+              <tr><td>Plexiglas (vetrișor)</td><td>Lavete moi, apă</td><td>Alcool, solvenți, cârpe aspre</td></tr>
+              <tr><td>Metal</td><td>Produse specifice aluminiu</td><td>Produse abrazive</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box-warning">
+          <strong>Fenomenul de Thermal Shock (șoc termic):</strong><br>
+          Zbor la altitudine mare (temperaturi scăzute) → coborâre rapidă în aer cald → pot apărea <strong>fisuri în stratul de gel</strong> al suprafețelor compozite.<br>
+          <strong>Aceste fisuri NU sunt periculoase structural</strong> dar <strong>reduc finețea aerodinamică</strong> prin perturbarea fluxului de aer.
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h3>3. Manevrarea pe Sol și Transportul</h3>
+        <p>Manevrarea trebuie să prevină solicitările mecanice inutile (încovoiere, torsiune, șoc).</p>
+        <ul>
+          <li><strong>Conformitate AFM</strong> – toate procedurile de manevrare (Sec. 5.6.1) și transport (Sec. 5.6.2) respectă instrucțiunile producătorului</li>
+          <li><strong>Viteză și siguranță</strong> – tractare cu prudență maximă; vibrațiile sau șocurile pot afecta structura</li>
+          <li><strong>Ancorarea (Sec. 5.6.3)</strong> – ancorare obligatorie pentru protecție față de vânt sau factori externi</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h3>4. Acumulatorul și Instrumentele de Bord</h3>
+        <ul>
+          <li><strong>Amortizoare de cauciuc</strong> – instrumentele de bord sunt fixate cu amortizoare pentru a fi protejate de vibrații și șocuri (Sec. 1.4)</li>
+          <li><strong>Mentenanța bateriei</strong> – verificați starea acumulatorului înainte de zbor (alimentează stația radio + FLARM + calculatoare de zbor)</li>
+          <li><strong>Securizarea bateriei</strong> – fixare fermă; bateria nesecurizată poate induce sarcini dinamice sau întrerupe conexiunile în manevre</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h3>5. Capcane pentru Testul Grilă</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Subiect</th><th>✅ Corect</th><th>❌ Greșit (capcane)</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Sursa procedurii de montare</td>
+                <td>AFM / Manual de Navigabilitate</td>
+                <td>Instrucțiunile verbale ale instructorului</td>
+              </tr>
+              <tr>
+                <td>Fisuri din thermal shock</td>
+                <td>Reduc finețea, NU afectează structura imediat</td>
+                <td>Sunt periculoase structural</td>
+              </tr>
+              <tr>
+                <td>Ancorarea planorului</td>
+                <td>Obligatorie conform AFM</td>
+                <td>Opțională pe timp calm</td>
+              </tr>
+              <tr>
+                <td>Instrumentele de bord</td>
+                <td>Protejate cu amortizoare cauciuc</td>
+                <td>Fixate rigid direct pe tablou</td>
+              </tr>
+              <tr>
+                <td>Verificarea bateriei</td>
+                <td>Obligatorie înainte de FIECARE zbor</td>
+                <td>Se verifică săptămânal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `,
+    flashcards: [
+      { q: "Care este diferența dintre structura semimonococă și monococă?", a: "Semimonococă: învelișul + structura internă preiau eforturile împreună. Monococă: învelișul preia singur toate eforturile." },
+      { q: "Ce este fenomenul Thermal Shock și ce consecințe are?", a: "Șoc termic: zbor la altitudine joasă (rece) → coborâre rapidă în aer cald → fisuri în stratul de gel. NU periclitează structura imediat, DAR reduc finețea aerodinamică." },
+      { q: "Fisurile de thermal shock sunt periculoase structural?", a: "NU sunt periculoase structural imediat, dar reduc performanțele aerodinamice (finețea) prin perturbarea fluxului de aer." },
+      { q: "Ce rol au amortizoarele de cauciuc la tabloul de bord?", a: "Protejează instrumentele de bord (sensitive la vibrații și șocuri) care pot fi dereglate de solicitări mecanice." },
+      { q: "Ancorarea planorului este opțională pe timp calm?", a: "NU. Ancorarea este OBLIGATORIE conform Sec. 5.6.3 din AFM, indiferent de condițiile meteorologice." },
+      { q: "Cine este sursa de autoritate pentru procedura de montare?", a: "AFM / Instrucțiunile de Navigabilitate – nu instrucțiunile verbale ale personalului." },
+      { q: "Ce alimentează acumulatorul pe planor?", a: "Stația radio, FLARM (anticollision), calculatoarele de zbor. Verificare obligatorie înainte de fiecare zbor." },
+      { q: "Ce solicitări mecanice trebuie evitate la manevrarea planorului pe sol?", a: "Încovoiere, torsiune, șoc. Tractarea se face cu prudență maximă, evitând vitezele care generează vibrații." }
+    ]
+  }
+
+};
+
+// Image mapping
+const CHAPTER_IMAGES = {
+  1: { harta: 'images/cap1_hartamintala.png', infografic1: 'images/cap1_infografic.png', infografic2: null },
+  2: { harta: 'images/cap2_hartamintala.png', infografic1: 'images/cap2_infografic.png', infografic2: null },
+  3: { harta: 'images/cap3_hartamintala.png', infografic1: 'images/cap3_infografic1.png', infografic2: 'images/cap3_infografic2.png' },
+  4: { harta: 'images/cap4_hartamintala.png', infografic1: 'images/cap4_infografic.png', infografic2: null },
+  5: { harta: 'images/cap5_hartamintala.png', infografic1: 'images/cap5_infografic.png', infografic2: null }
+};
+</script>
+
+
+<!-- ══════════════════════════════════════════ -->
+<!--  APP LOGIC                                 -->
+<!-- ══════════════════════════════════════════ -->
+<script>
+let currentChapter = null;
+let deferredInstallPrompt = null;
+
+// ─── PWA Service Worker ───────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('[PWA] SW registered:', reg.scope))
+      .catch(err => console.warn('[PWA] SW failed:', err));
+  });
+}
+
+// ─── PWA Install Prompt ───────────────────────
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+
+document.getElementById('install-btn').addEventListener('click', () => {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(() => {
+    deferredInstallPrompt = null;
+    document.getElementById('install-banner').classList.remove('show');
+  });
+});
+
+document.getElementById('dismiss-install').addEventListener('click', () => {
+  document.getElementById('install-banner').classList.remove('show');
+});
+
+// ─── Offline detection ────────────────────────
+function updateOnlineStatus() {
+  const toast = document.getElementById('offline-toast');
+  if (!navigator.onLine) {
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+}
+window.addEventListener('offline', updateOnlineStatus);
+
+// ─── Navigation ───────────────────────────────
+function openChapter(num) {
+  currentChapter = num;
+  const ch = CHAPTERS[num];
+  const imgs = CHAPTER_IMAGES[num];
+
+  // Set title
+  document.getElementById('chapter-title').textContent = ch.title;
+  document.getElementById('chapter-badge').textContent = `CAP ${num}`;
+
+  // Set content
+  document.getElementById('chapter-content-inner').innerHTML = ch.content;
+
+  // Set images
+  const imgHarta = document.getElementById('img-harta');
+  const imgInfografic1 = document.getElementById('img-infografic1');
+  const imgInfografic2 = document.getElementById('img-infografic2');
+  const section2 = document.getElementById('img-section-2');
+
+  imgHarta.src = imgs.harta;
+  imgHarta.classList.remove('error-img');
+  imgInfografic1.src = imgs.infografic1;
+  imgInfografic1.classList.remove('error-img');
+
+  if (imgs.infografic2) {
+    imgInfografic2.src = imgs.infografic2;
+    imgInfografic2.classList.remove('error-img');
+    section2.style.display = '';
+  } else {
+    section2.style.display = 'none';
+  }
+
+  // Set flashcards
+  const flashEl = document.getElementById('flashcard-inner');
+  flashEl.innerHTML = ch.flashcards.map(f => `
+    <div class="flashcard">
+      <div class="q">❓ ${f.q}</div>
+      <div class="a">${f.a}</div>
+    </div>
+  `).join('');
+
+  // Reset tabs to first
+  switchTabByName('tab-content');
+
+  // Switch screens
+  document.getElementById('screen-home').classList.remove('active');
+  document.getElementById('screen-chapter').classList.add('active');
+  document.getElementById('nav-cap').style.display = 'flex';
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  document.getElementById('screen-chapter').classList.remove('active');
+  document.getElementById('screen-home').classList.add('active');
+  document.getElementById('nav-cap').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+// ─── Tab switching ────────────────────────────
+function switchTab(btn, panelId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+function switchTabByName(panelId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById(panelId);
+  if (panel) panel.classList.add('active');
+  const tabs = document.querySelectorAll('.tab-btn');
+  if (tabs[0]) tabs[0].classList.add('active');
+}
+</script>
+
+</body>
+</html>
